@@ -1,0 +1,123 @@
+ 
+Data Science & Analytics Project Definition:
+
+Updated: 2024.04.17
+
+Project Name: Investment_Portfolio_App
+
+Project and Work Product Description: 
+
+   Capturing and maintaing Buy/Sell Stock investments (your portfolio) for the beginner.
+   Keep all your Buy/Sell transactions in one manageable place.
+   Pull desired/chosen Ticker symbols from yfiance RestAPI. 
+   
+          
+	* Problem and Solution Workflow Diagrams (2 flowcharts "AS-IS" and "TO-BE")
+    
+    High-level workflow Diagram:
+      <<Investment_Portfolio_App.drawio>>  https://app.diagrams.net/?src=about#
+
+Description of Solution: 
+	* Software functions for solving problem(s) step by step.
+
+
+    * Additional requirements, Graphical User Interfaces (GUI), usability, etc. for later versions
+    Using two repo sources: 
+    https://github.com/kdboller/pythonsp500  and  https://streamlit.io/gallery?category=finance-business  
+    
+    Refactor these repos to extend there current functionality as follows:
+    v1:
+       1: convert Jupyter Notebook code and markdown cells into a reusable Python program that performs Stock Portfolio (Buy/Sell) transactions
+       2: use real-time data feeds to obtain current data sets using RestAPI (yfinance).
+       3: integrate the 2nd repo using streamlit framework to analyze the captured data sets.
+ 
+    v2:
+       1: integrate a streamlit database (SQLite) to store the data in one or more tables. 
+       2: query data from SQLite db and export data into either a comma delimited or excel file format.
+       3: produce plotly or matplotlib graphics for certain data sets.
+       
+       
+    	* Workflow diagram of future ("TO-BE") state (improved processes from your solution).
+        
+Solution Design (high-level):
+
+ -- Change Log --
+
+4/15/2024: 
+
+    -- Jonathan -- Investment_Portfolio_App
+
+    -Changed xlsx sheet to separate each transaction 
+    -Rewrote most of the originally forked app to properly utilize FIFO accounting.  
+    -Added code to pull current data from yfinance API 
+    -Added code to iterate on each transaction in the transactions tab, and copy each ticker only once to the summary page 
+    -Added calculations for profits, realized gains, and current value for each ticker 
+
+    -- Joe -- Invesment Portfolio (SWAST Handover Delays -- source/repo)
+
+    - Explored the existing projects for finance sector
+    - Created a new python file investment_portfolio.py
+    - Added/updated the code/functions in the above file
+    - Added an image file with NTAI logo
+    - Tested the investment_portfolio.py
+
+4/16/2024:  
+
+    -- Jonathan --
+
+    -Added cost basis calculation to summary page 
+    -Added unrealized gains calculation to summary page 
+    -Added rounding to 2 decimal places 
+
+
+Ongoing issues: 
+
+     -- Jonathan --
+
+    -Adding new ticker in transaction sheet results in key error. 
+    -Handle all the null values being displayed on streamlit app. 
+    -Double check consistency of outputs to ensure cells don't change unexpectedly. 
+
+     -- Joe --
+     
+    - Continued the cycle "test > develop > debug > test" 
+    - Added more code into the .py file for rendering the logo, title and content
+    - Added a column called "Investor" in the existing spreadsheet provided by Jonathan
+    - Created an env for running the web application
+    - Fixed the code after testing with the env
+
+    https://github.com/jonrebelo/Investment_Portfolio_App/tree/JoeLi_branch
+
+To do:
+
+-Add column for different investors 
+
+- To explore web page input option
+- To call existing .py file
+
+
+Solution Code Description (low-level design): 
+	* Describe code (to help users understand it.)
+    * Software packages (Python packages, etc.)
+          yfinance, pandas, numpy, datetime, matplotlib.pyplot, plotly
+          streamlit, time, plotly.express, plotly.graph_objects, mitosheet.spreadsheet
+
+	* Hyperlinks to actual complete code  
+
+Actual Working Product Code: 
+    Functions, modules, packages, documentation 
+    
+ 
+    
+Application Instructions:
+
+    * Step-by-step instructions for OTHERS:
+        Instructions to install, set-up, and use your software:
+        Everything needed to get your solution working.   
+            Software packages and tools
+            Configuration, data sets, URLs, input and output folder structure, etc. 
+            conda environment create and package installation batch script
+            
+    * Additional Important Guidelines for Product Usability (for others to use your work products:
+
+
