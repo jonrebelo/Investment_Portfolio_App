@@ -42,7 +42,7 @@ unique_tickers_in_transactions = dfs['Transactions']['Ticker'].unique()
 for ticker in unique_tickers_in_transactions:
     if ticker not in dfs['Summary']['Ticker'].values:
         new_row = {'Ticker': ticker, 'Quantity': 0, 'Price Today': 0, 'Current Value': 0, 'Cost Basis': 0, 'Realized Sales': 0, 'Realized Profit': 0, 'Unrealized Profit': 0}
-        dfs['Summary'] = dfs['Summary']._append(new_row, ignore_index=True)
+        dfs['Summary'] = dfs['Summary'].append(new_row, ignore_index=True)
 
 # Update the list of unique tickers
 tickers = dfs['Summary']['Ticker'].unique().tolist()  # Convert numpy array to list
@@ -152,7 +152,18 @@ dfs['Summary'] = dfs['Summary'].set_index('Ticker')
 dfs['Summary']['Realized Sales'] = realized_sales_series
 dfs['Summary'] = dfs['Summary'].reset_index()
 
-# Write all DataFrames back to the Excel file
 with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
     for sheet, df in dfs.items():
         df.to_excel(writer, sheet_name=sheet, index=False)
+
+    # Get unique IDs from the 'Transactions' sheet
+    ids = dfs['Transactions']['ID'].unique().tolist()
+
+    # For each ID, filter the 'Transactions' DataFrame and perform the same calculations as in the 'Summary' sheet
+    for id in ids:
+        transactions = dfs['Transactions'][dfs['Transactions']['ID'] == id]
+        summary = dfs['Summary'][dfs['Summary']['Ticker'].isin(transactions['Ticker'].unique())].copy()
+
+        # Write the resulting DataFrame to the corresponding sheet
+        investor_name = dfs['Transactions'][dfs['Transactions']['ID'] == id]['Investor'].iloc[0]
+        summary.to_excel(writer, sheet_name=investor_name, index=False)
