@@ -10,6 +10,10 @@ from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 
 import plotly.graph_objs as go
 
+from openpyxl import Workbook
+from openpyxl.utils.dataframe import dataframe_to_rows
+from openpyxl.styles import numbers
+
 print(__version__) # requires version >= 1.9.0
 
 init_notebook_mode(connected=True)
@@ -130,7 +134,7 @@ adj_close_series = data['Adj Close'].squeeze()
 dfs['Summary']['Price Today'] = dfs['Summary']['Ticker'].map(adj_close_series).round(2)
 
 # Update the 'Current Value' column in the 'Summary' DataFrame
-dfs['Summary']['Current Value'] = dfs['Summary']['Quantity'] * dfs['Summary']['Price Today'].round(3)
+dfs['Summary']['Current Value'] = dfs['Summary']['Quantity'] * dfs['Summary']['Price Today']
 
 # Calculate the total quantity for each ticker
 quantity_series = dfs['Transactions'].groupby(['Ticker', 'Type'])['Shares'].sum().unstack().fillna(0)
@@ -144,26 +148,48 @@ dfs['Summary'] = dfs['Summary'].reset_index()
 # Calculate the total realized sales for each ticker
 realized_sales_series = dfs['Transactions'][dfs['Transactions']['Type'] == 'Sell'].groupby('Ticker')['Transaction Total'].sum()
 
+# Set pandas display options
+pd.options.display.float_format = "{:.2f}".format
+
 # Calculate 'Unrealized Profit' for each ticker
-dfs['Summary']['Unrealized Profit'] = dfs['Summary']['Current Value'] - dfs['Summary']['Cost Basis']
+dfs['Summary']['Unrealized Profit'] = (dfs['Summary']['Current Value'] - dfs['Summary']['Cost Basis']).round(2)
+
+# After all calculations, replace all null values with 0 and round all numerical columns to 2 decimal places
+dfs['Summary'] = dfs['Summary'].fillna(0).round(2)
+
+# Display the DataFrame
+print(dfs['Summary'])
 
 # Update the 'Realized Sales' column in the 'Summary' DataFrame
 dfs['Summary'] = dfs['Summary'].set_index('Ticker')
 dfs['Summary']['Realized Sales'] = realized_sales_series
 dfs['Summary'] = dfs['Summary'].reset_index()
 
+# When writing to Excel, ensure all numerical values are formatted to 2 decimal places
 with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
     for sheet, df in dfs.items():
         df.to_excel(writer, sheet_name=sheet, index=False)
+        # Get the openpyxl worksheet
+        ws = writer.sheets[sheet]
+        for row in ws.iter_rows():
+            for cell in row:
+                if isinstance(cell.value, float):
+                    cell.number_format = numbers.FORMAT_NUMBER_00
 
     # Get unique IDs from the 'Transactions' sheet
     ids = dfs['Transactions']['ID'].unique().tolist()
 
-    # For each ID, filter the 'Transactions' DataFrame and perform the same calculations as in the 'Summary' sheet
-    for id in ids:
-        transactions = dfs['Transactions'][dfs['Transactions']['ID'] == id]
-        summary = dfs['Summary'][dfs['Summary']['Ticker'].isin(transactions['Ticker'].unique())].copy()
+# For each ID, filter the 'Transactions' DataFrame and perform the same calculations as in the 'Summary' sheet
+for id in ids:
+    transactions = dfs['Transactions'][dfs['Transactions']['ID'] == id]
+    summary = dfs['Summary'][dfs['Summary']['Ticker'].isin(transactions['Ticker'].unique())].copy()
 
-        # Write the resulting DataFrame to the corresponding sheet
-        investor_name = dfs['Transactions'][dfs['Transactions']['ID'] == id]['Investor'].iloc[0]
-        summary.to_excel(writer, sheet_name=investor_name, index=False)
+    # Write the resulting DataFrame to the corresponding sheet
+    summary.to_excel(writer, sheet_name=str(id), index=False)
+    # Get the openpyxl worksheet
+    ws = writer.sheets[str(id)]
+    for row in ws.iter_rows():
+        for cell in row:
+            if isinstance(cell.value, float):
+                cell.number_format = numbers.FORMAT_NUMBER_00
+
