@@ -16,10 +16,15 @@ Project and Work Product Description:
       AS-IS <<Investment_Portfolio_App.drawio>> open at https://app.diagrams.net/?src=about#
       TO-BE <<Investment_Portfolio_App_v1.drawio>> open at https://app.diagrams.net/?src=about#
 Description of Solution: 
-	* Software functions for solving problem(s) step by step.
+	
+     - convert Jupyter Notebook code and markdown cells into a reusable Python program that performs Stock Portfolio (Buy/Sell) transactions
+     - use real-time data feeds to obtain current data sets using RestAPI (yfinance).
+     - integrate the 2nd repo using streamlit framework to display and analyze the captured data sets.
 
-
-    * Additional requirements, Graphical User Interfaces (GUI), usability, etc. for later versions
+     Additional requirements:
+       - create a database to store captured information 
+       - 
+     
     Using two repo sources: 
     https://github.com/kdboller/pythonsp500  and  https://streamlit.io/gallery?category=finance-business  
     
@@ -86,10 +91,14 @@ Ongoing issues:
 
     https://github.com/jonrebelo/Investment_Portfolio_App/tree/JoeLi_branch
 
+4/17/2024: 
+    - confirm if adding any new columns in excel spreadsheet for 2nd repo will affect
+    the existing code in the 1st repo (Investment_Portfolio_App).
+    - add flowchart for 2nd repo to show how the code works.
+    - update yml file with the latest changes.
 To do:
 
 -Add column for different investors 
-
 - To explore web page input option
 - To call existing .py file
 
@@ -111,11 +120,20 @@ Application Instructions:
 
     * Step-by-step instructions for OTHERS:
         Instructions to install, set-up, and use your software:
-        Everything needed to get your solution working.   
-            Software packages and tools
-            Configuration, data sets, URLs, input and output folder structure, etc. 
-            conda environment create and package installation batch script
-            
-    * Additional Important Guidelines for Product Usability (for others to use your work products:
+        # obtain repo from github
+            download the code from the repo @ https://github.com/jonrebelo/Investment_Portfolio_App  
+          
+         # create virtual envrionment 
+            conda create --name Investment_Portfolio_App -c conda-forge yfinance pandas numpy datetime matplotlib.pyplot plotly
+         streamlit plotly  
+          
+        ## Activate the environment
+            conda activate candidate_connect
 
-
+        ## Install additional packages in the environment for generating diagrams
+        
+        ## Run the code
+            python Investment_Portfolio_App.py
+        
+        # may have to manually modify the Ticker column in excel sheet to match the yfinance API
+           open the excel sheet and modify the Ticker column to match the yfinance API.
