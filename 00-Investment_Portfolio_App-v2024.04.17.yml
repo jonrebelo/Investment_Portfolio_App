@@ -1,7 +1,7 @@
  
 Data Science & Analytics Project Definition:
 
-Updated: 2024.04.17
+Updated: 2024.04.18
 
 Project Name: Investment_Portfolio_App
 
@@ -111,10 +111,14 @@ To do:
 - v1 of the project is complete end of day 4/18/2024
 
 Solution Code Description (low-level design): 
-	* Describe code (to help users understand it.)
+	* yfinance API to pull current stock data into Transaction sheet of excel file.
+    * Calculate the cost basis, realized gains, and current value of each ticker in the excel file.
+    * summary page to display the realized gains, unrealized gains, and cost basis of each ticker.
+    * Streamlit to display the data per ticker for each investor.
+
     * Software packages (Python packages, etc.)
           yfinance, pandas, numpy, datetime, matplotlib.pyplot, plotly
-          streamlit, time, plotly.express, plotly.graph_objects, mitosheet.spreadsheet
+          streamlit, openpyxl
 
 	
 Actual Working Product Code: 
@@ -131,7 +135,7 @@ Application Instructions:
           
          # create virtual envrionment 
             conda create --name Investment_Portfolio_App -c conda-forge yfinance pandas numpy datetime matplotlib.pyplot plotly
-         streamlit plotly  
+         streamlit openpyxl 
           
         ## Activate the environment
             conda activate candidate_connect
