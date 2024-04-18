@@ -11,12 +11,10 @@ Project and Work Product Description:
    Keep all your Buy/Sell transactions in one manageable place.
    Pull desired/chosen Ticker symbols from yfiance RestAPI. 
    
-          
-	* Problem and Solution Workflow Diagrams (2 flowcharts "AS-IS" and "TO-BE")
-    
+     
     High-level workflow Diagram:
-      <<Investment_Portfolio_App.drawio>>  https://app.diagrams.net/?src=about#
-
+      AS-IS <<Investment_Portfolio_App.drawio>> open at https://app.diagrams.net/?src=about#
+      TO-BE <<Investment_Portfolio_App_v1.drawio>> open at https://app.diagrams.net/?src=about#
 Description of Solution: 
 	* Software functions for solving problem(s) step by step.
 
