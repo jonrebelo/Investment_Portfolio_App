@@ -16,14 +16,14 @@ print(__version__) # requires version >= 1.9.0
 
 init_notebook_mode(connected=True)
 
-filepath = "F:/00_Github/Investment_Portfolio_App/New Sheet.xlsx"
-
+filepath = "./New Sheet.xlsx"
+print("filepath: ", filepath)
 # Load the entire Excel file
 xls = pd.ExcelFile(filepath)
 
 # Load all sheet names
 sheet_names = xls.sheet_names
-
+print("sheet_names: ", sheet_names)
 # Load all sheets into a dictionary of DataFrames
 dfs = {sheet: pd.read_excel(xls, sheet) for sheet in sheet_names}
 
