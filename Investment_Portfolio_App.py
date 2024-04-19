@@ -29,6 +29,11 @@ sheet_names = xls.sheet_names
 # Load all sheets into a dictionary of DataFrames
 dfs = {sheet: pd.read_excel(xls, sheet) for sheet in sheet_names}
 
+# Convert all numerical columns to float
+for df_name in dfs:
+    for col in dfs[df_name].select_dtypes(include=[np.number]).columns:
+        dfs[df_name][col] = dfs[df_name][col].astype(float)
+
 # Convert the 'Transaction Date' column to datetime format (only year, month, day) in the 'transactions' DataFrame
 dfs['Transactions']['Transaction Date'] = pd.to_datetime(dfs['Transactions']['Transaction Date']).dt.date
 
@@ -46,7 +51,7 @@ unique_tickers_in_transactions = dfs['Transactions']['Ticker'].unique()
 for ticker in unique_tickers_in_transactions:
     if ticker not in dfs['Summary']['Ticker'].values:
         new_row = {'Ticker': ticker, 'Quantity': 0, 'Price Today': 0, 'Current Value': 0, 'Cost Basis': 0, 'Realized Sales': 0, 'Realized Profit': 0, 'Unrealized Profit': 0}
-        dfs['Summary'] = dfs['Summary'].append(new_row, ignore_index=True)
+        dfs['Summary'] = dfs['Summary']._append(new_row, ignore_index=True)
 
 # Update the list of unique tickers
 tickers = dfs['Summary']['Ticker'].unique().tolist()  # Convert numpy array to list
@@ -154,9 +159,6 @@ pd.options.display.float_format = "{:.2f}".format
 # Calculate 'Unrealized Profit' for each ticker
 dfs['Summary']['Unrealized Profit'] = (dfs['Summary']['Current Value'] - dfs['Summary']['Cost Basis']).round(2)
 
-# After all calculations, replace all null values with 0 and round all numerical columns to 2 decimal places
-dfs['Summary'] = dfs['Summary'].fillna(0).round(2)
-
 # Display the DataFrame
 print(dfs['Summary'])
 
@@ -164,6 +166,10 @@ print(dfs['Summary'])
 dfs['Summary'] = dfs['Summary'].set_index('Ticker')
 dfs['Summary']['Realized Sales'] = realized_sales_series
 dfs['Summary'] = dfs['Summary'].reset_index()
+
+# After all calculations, replace all null values with 0 and round all numerical columns to 2 decimal places
+for df_name in dfs:
+    dfs[df_name] = dfs[df_name].fillna(0).round(2)
 
 # When writing to Excel, ensure all numerical values are formatted to 2 decimal places
 with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
@@ -184,6 +190,9 @@ for id in ids:
     transactions = dfs['Transactions'][dfs['Transactions']['ID'] == id]
     summary = dfs['Summary'][dfs['Summary']['Ticker'].isin(transactions['Ticker'].unique())].copy()
 
+    # Replace all null values with 0 and round all numerical columns to 2 decimal places
+    summary = summary.fillna(0).round(2)
+
     # Write the resulting DataFrame to the corresponding sheet
     summary.to_excel(writer, sheet_name=str(id), index=False)
     # Get the openpyxl worksheet
@@ -192,4 +201,3 @@ for id in ids:
         for cell in row:
             if isinstance(cell.value, float):
                 cell.number_format = numbers.FORMAT_NUMBER_00
-
