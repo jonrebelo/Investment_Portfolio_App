@@ -18,7 +18,7 @@ print(__version__) # requires version >= 1.9.0
 
 init_notebook_mode(connected=True)
 
-filepath = "F:/00_Github/Investment_Portfolio_App/New Sheet.xlsx"
+filepath = "./New Sheet.xlsx"
 
 # Load the entire Excel file
 xls = pd.ExcelFile(filepath)
@@ -187,7 +187,7 @@ with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
 
     # For each "Individual", filter the "Transactions" DataFrame and perform the same calculations as in the "Summary" sheet
     for individual in individuals:
-        transactions = dfs['Transactions'][dfs['Transactions']['Individual'] == individual]
+        transactions = dfs['Transactions'][dfs['Transactions']['Investor'] == individual]
         summary = dfs['Summary'][dfs['Summary']['Ticker'].isin(transactions['Ticker'].unique())].copy()
 
         # Replace all null values with 0 and round all numerical columns to 2 decimal places

@@ -13,7 +13,7 @@ import plotly.graph_objects as go
 import subprocess
 # import yfinance as yf
 
-st.set_page_config(page_title='Investment Portfolio App',  layout='wide', page_icon=':ambulance:')
+st.set_page_config(page_title='Investment Portfolio App',  layout='wide', page_icon=':dollar:')
 
 #this is the header
  
