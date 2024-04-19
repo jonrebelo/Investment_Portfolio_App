@@ -56,12 +56,7 @@ for ticker in unique_tickers_in_transactions:
 # Update the list of unique tickers
 tickers = dfs['Summary']['Ticker'].unique().tolist()  # Convert numpy array to list
 
-for idx, row in dfs['Transactions'].iterrows():
-    dfs['Summary'] = dfs['Summary'][dfs['Summary']['Ticker'].isin(unique_tickers_in_transactions)]
-
-# Sort the 'Transactions' DataFrame by date
-dfs['Transactions'] = dfs['Transactions'].sort_values('Transaction Date')
-
+# Initialize a DataFrame to hold the cost basis for each buy transaction
 cost_basis_df = pd.DataFrame(columns=['Ticker', 'Shares', 'Transaction Total'])
 
 # Initialize 'Cost Basis' column in the 'Summary' DataFrame
@@ -74,56 +69,78 @@ profit_series = pd.Series(dtype='float64')
 for column in ['Cost Basis', 'Realized Profit', 'Unrealized Profit']:
     dfs['Summary'][column] = dfs['Summary'][column].astype(float)
 
-# Create a dictionary to hold the cost basis and shares of each ticker
-cost_basis_dict = {ticker: [] for ticker in dfs['Summary']['Ticker'].unique()}
+# Initialize a DataFrame to hold the profit for each sell transaction
+profit_df = pd.DataFrame(columns=['Ticker', 'Profit'])
 
-# Iterate over the sorted 'Transactions' DataFrame
+# Initialize a DataFrame to hold the sales for each sell transaction
+sales_df = pd.DataFrame(columns=['Ticker', 'Sales'])
+
 for idx, row in dfs['Transactions'].iterrows():
     if row['Type'] == 'Buy':
-        # Add the shares to the cost basis DataFrame
-        cost_basis_df.loc[len(cost_basis_df)] = row[['Ticker', 'Shares', 'Transaction Total']]
+        # Calculate cost per share for the buy transaction
+        cost_per_share = row['Transaction Total'] / row['Shares']
+        # Add the shares and cost per share to the cost basis DataFrame
+        cost_basis_df = cost_basis_df._append({'Ticker': row['Ticker'], 'Shares': row['Shares'], 'Cost Per Share': cost_per_share}, ignore_index=True)
     elif row['Type'] == 'Sell':
         # Subtract the shares from the cost basis DataFrame in the order they were added (FIFO)
         sell_shares = row['Shares']
         sell_ticker = row['Ticker']
-        sell_price = row['Transaction Total'] / sell_shares
+        sell_price = row['Cost Per Share']  # Use the sell price from the transaction
         profit = 0
+        sales_df = sales_df._append({'Ticker': sell_ticker, 'Sales': sell_shares * sell_price}, ignore_index=True)
         for i, cost_row in cost_basis_df[cost_basis_df['Ticker'] == sell_ticker].iterrows():
             if sell_shares <= 0:
                 break
             shares_to_sell = min(sell_shares, cost_row['Shares'])
-            profit += shares_to_sell * (sell_price - (cost_row['Transaction Total'] / cost_row['Shares']))
+            cost_per_share = cost_row['Cost Per Share']  # Use the cost per share from the buy transaction
+            profit += shares_to_sell * (sell_price - cost_per_share)
             sell_shares -= shares_to_sell
             cost_basis_df.loc[i, 'Shares'] -= shares_to_sell
+        # Remove rows with zero shares from the cost basis DataFrame
         cost_basis_df = cost_basis_df[cost_basis_df['Shares'] > 0]
-        profit_series[sell_ticker] = profit_series.get(sell_ticker, 0) + profit
+        profit_df = profit_df._append({'Ticker': sell_ticker, 'Profit': profit}, ignore_index=True)
 
-# Iterate over the 'Transactions' DataFrame
+# Initialize a dictionary to store the cost basis for each ticker
+cost_basis_dict = {}
+
 for idx, row in dfs['Transactions'].iterrows():
+    ticker = row['Ticker']
     if row['Type'] == 'Buy':
-        # Add the transaction total and shares to the cost basis dictionary for the corresponding ticker
-        cost_basis_dict.setdefault(row['Ticker'], []).append((row['Transaction Total'], row['Shares']))
+        cost_per_share = row['Transaction Total'] / row['Shares']
+        # Add the total cost of the bought shares to the cost basis for this ticker
+        cost_basis_dict[ticker] = cost_basis_dict.get(ticker, 0) + row['Transaction Total']
+        cost_basis_df = cost_basis_df._append({'Ticker': ticker, 'Shares': row['Shares'], 'Cost Per Share': cost_per_share, 'Transaction Total': row['Transaction Total']}, ignore_index=True)
     elif row['Type'] == 'Sell':
-        # Subtract the cost basis of the sold shares from the cost basis dictionary for the corresponding ticker
         sell_shares = row['Shares']
-        while sell_shares > 0 and cost_basis_dict[row['Ticker']]:
-            buy_total, buy_shares = cost_basis_dict[row['Ticker']][0]
-            if buy_shares > sell_shares:
-                cost_basis_dict[row['Ticker']][0] = (buy_total * (buy_shares - sell_shares) / buy_shares, buy_shares - sell_shares)
-                sell_shares = 0
-            else:
-                sell_shares -= buy_shares
-                cost_basis_dict[row['Ticker']].pop(0)
+        for i, cost_row in cost_basis_df[cost_basis_df['Ticker'] == ticker].iterrows():
+            if sell_shares <= 0:
+                break
+            shares_to_sell = min(sell_shares, cost_row['Shares'])
+            sell_shares -= shares_to_sell
+            cost_basis_df.loc[i, 'Shares'] -= shares_to_sell
+            # Subtract the cost of the sold shares from the cost basis for this ticker
+            cost_basis_dict[ticker] -= shares_to_sell * cost_row['Cost Per Share']
 
-# After processing all transactions, update the 'Summary' DataFrame
+# Remove rows with 0 shares after all transactions are processed
+cost_basis_df = cost_basis_df[cost_basis_df['Shares'] > 0]
+
 for ticker in dfs['Summary']['Ticker'].unique():
-    dfs['Summary'].loc[dfs['Summary']['Ticker'] == ticker, 'Cost Basis'] = sum(total for total, shares in cost_basis_dict[ticker])
-    dfs['Summary'].loc[dfs['Summary']['Ticker'] == ticker, 'Quantity'] = sum(shares for total, shares in cost_basis_dict[ticker])
+    # Use the cost basis from the dictionary instead of summing the 'Transaction Total' column
+    dfs['Summary'].loc[dfs['Summary']['Ticker'] == ticker, 'Cost Basis'] = cost_basis_dict.get(ticker, 0)
+
+# Calculate the total sales for each ticker
+sales_series = sales_df.groupby('Ticker')['Sales'].sum()
+
+# Update the 'Realized Sales' column in the 'Summary' DataFrame
+for ticker, sales in sales_series.items():
+    dfs['Summary'].loc[dfs['Summary']['Ticker'] == ticker, 'Realized Sales'] = sales
+
+# Calculate the total realized profit for each ticker
+profit_series = profit_df.groupby('Ticker')['Profit'].sum()
 
 # Update the 'Realized Profit' column in the 'Summary' DataFrame
-dfs['Summary'] = dfs['Summary'].set_index('Ticker')
-dfs['Summary']['Realized Profit'] = profit_series
-dfs['Summary'] = dfs['Summary'].reset_index()
+for ticker, profit in profit_series.items():
+    dfs['Summary'].loc[dfs['Summary']['Ticker'] == ticker, 'Realized Profit'] = profit
 
 # Round 'Cost Basis', 'Realized Profit' and 'Unrealized Profit' to 2 decimal places
 for column in ['Cost Basis', 'Realized Profit', 'Unrealized Profit']:
@@ -150,9 +167,6 @@ dfs['Summary'] = dfs['Summary'].set_index('Ticker')
 dfs['Summary']['Quantity'] = quantity_series['Total']
 dfs['Summary'] = dfs['Summary'].reset_index()
 
-# Calculate the total realized sales for each ticker
-realized_sales_series = dfs['Transactions'][dfs['Transactions']['Type'] == 'Sell'].groupby('Ticker')['Transaction Total'].sum()
-
 # Set pandas display options
 pd.options.display.float_format = "{:.2f}".format
 
@@ -161,11 +175,6 @@ dfs['Summary']['Unrealized Profit'] = (dfs['Summary']['Current Value'] - dfs['Su
 
 # Display the DataFrame
 print(dfs['Summary'])
-
-# Update the 'Realized Sales' column in the 'Summary' DataFrame
-dfs['Summary'] = dfs['Summary'].set_index('Ticker')
-dfs['Summary']['Realized Sales'] = realized_sales_series
-dfs['Summary'] = dfs['Summary'].reset_index()
 
 # After all calculations, replace all null values with 0 and round all numerical columns to 2 decimal places
 for df_name in dfs:
