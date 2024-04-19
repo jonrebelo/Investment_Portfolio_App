@@ -96,6 +96,6 @@ Application Instructions:
         plotly import __version__ plotly.offline plotly.graph_objs plotly.graph_objects plotly.express openpyxl openpyxl.utils.dataframe openpyxl.styles
         
         ## Run the code
-           - streamlit run Investment_Portfolio_App.py       
+           - streamlit run investment_portfoli_v2.py (when running, it will call Investment_Portfolio_App.py).     
            - Enter buy/sell transaction in the "Transactions" sheet ensuring the stock ticker symbol is correct.
              note: Transaction total must be left blank (program will calculate this).
