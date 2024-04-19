@@ -182,22 +182,22 @@ with pd.ExcelWriter(filepath, engine='openpyxl') as writer:
                 if isinstance(cell.value, float):
                     cell.number_format = numbers.FORMAT_NUMBER_00
 
-    # Get unique IDs from the 'Transactions' sheet
-    ids = dfs['Transactions']['ID'].unique().tolist()
+    # Get unique "Individual" values from the "Investor" sheet
+    individuals = dfs['Investors']['Individual'].unique().tolist()
 
-# For each ID, filter the 'Transactions' DataFrame and perform the same calculations as in the 'Summary' sheet
-for id in ids:
-    transactions = dfs['Transactions'][dfs['Transactions']['ID'] == id]
-    summary = dfs['Summary'][dfs['Summary']['Ticker'].isin(transactions['Ticker'].unique())].copy()
+    # For each "Individual", filter the "Transactions" DataFrame and perform the same calculations as in the "Summary" sheet
+    for individual in individuals:
+        transactions = dfs['Transactions'][dfs['Transactions']['Individual'] == individual]
+        summary = dfs['Summary'][dfs['Summary']['Ticker'].isin(transactions['Ticker'].unique())].copy()
 
-    # Replace all null values with 0 and round all numerical columns to 2 decimal places
-    summary = summary.fillna(0).round(2)
+        # Replace all null values with 0 and round all numerical columns to 2 decimal places
+        summary = summary.fillna(0).round(2)
 
-    # Write the resulting DataFrame to the corresponding sheet
-    summary.to_excel(writer, sheet_name=str(id), index=False)
-    # Get the openpyxl worksheet
-    ws = writer.sheets[str(id)]
-    for row in ws.iter_rows():
-        for cell in row:
-            if isinstance(cell.value, float):
-                cell.number_format = numbers.FORMAT_NUMBER_00
+        # Write the resulting DataFrame to the corresponding sheet
+        summary.to_excel(writer, sheet_name=str(individual), index=False)
+        # Get the openpyxl worksheet
+        ws = writer.sheets[str(individual)]
+        for row in ws.iter_rows():
+            for cell in row:
+                if isinstance(cell.value, float):
+                    cell.number_format = numbers.FORMAT_NUMBER_00
