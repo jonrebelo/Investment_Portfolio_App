@@ -165,13 +165,15 @@ quantity_series['Total'] = quantity_series['Buy'] - quantity_series['Sell']
 # Update the 'Quantity' column in the 'Summary' DataFrame
 dfs['Summary'] = dfs['Summary'].set_index('Ticker')
 dfs['Summary']['Quantity'] = quantity_series['Total']
-dfs['Summary'] = dfs['Summary'].reset_index()
+
 
 # Set pandas display options
 pd.options.display.float_format = "{:.2f}".format
 
 # Calculate 'Unrealized Profit' for each ticker
-dfs['Summary']['Unrealized Profit'] = (dfs['Summary']['Current Value'] - dfs['Summary']['Cost Basis']).round(2)
+dfs['Summary']['Unrealized Profit'] = np.where(dfs['Summary']['Quantity'] == 0, 0, (dfs['Summary']['Current Value'] - dfs['Summary']['Cost Basis']).round(2))
+
+dfs['Summary'] = dfs['Summary'].reset_index()
 
 # Display the DataFrame
 print(dfs['Summary'])
