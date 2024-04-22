@@ -26,7 +26,7 @@ t2.title("Networking Technology Academy Institute:")
 t2.title("\n Personal Investment Portfolio Report")
 t2.markdown(" **tel:** 617-123-4567 **| website:** https://www.networktechnologyacademy.org **| email:** xyz@ntai.com")
 
-dataFile = "New Sheet.xlsx"
+dataFile = "data.xlsx"
 
 ## Data
 
@@ -64,7 +64,7 @@ with st.spinner('Updating Report...'):
         
     fig.update_layout(title_text="Summary",title_font_color = '#264653',title_x=0,margin= dict(l=0,r=10,b=10,t=30), height=480)
         
-    cw1.plotly_chart(fig, use_container_width=True)
+    cw1.dataframe(cwdf)
 
     cwdf = pd.read_excel(dataFile,sheet_name = 'Transactions')    
     if invstr == 'All':
@@ -91,8 +91,36 @@ with st.spinner('Updating Report...'):
         
     fig.update_layout(title_text="Transactions",title_font_color = '#264653',title_x=0,margin= dict(l=0,r=10,b=10,t=30), height=480)
         
-    cw2.plotly_chart(fig, use_container_width=True)
+    cw2.dataframe(cwdf)
 
+# Add Transaction Form
+with st.expander("Add Transaction"):
+    with st.form(key='add_transaction', clear_on_submit=True):
+        # Assuming the columns in the 'Transactions' sheet are 'Investor', 'ID', 'Transaction Date', 'Ticker', 'Type', 'Shares', 'Cost Per Share'
+        investor = st.text_input('Investor')
+        id = st.text_input("ID")
+        transaction_date = st.text_input('Transaction Date')
+        ticker = st.text_input("Stock Ticker")
+        type = st.selectbox("Type", ["Buy", "Sell"])
+        shares = st.number_input("Quantity of Shares", value=0)
+        cost_per_share = st.number_input('Cost Per Share', value=0.00)
+
+        submit_button = st.form_submit_button(label='Add Transaction')
+        if submit_button:
+            # Load all sheets into a dictionary of DataFrames
+            xlsx = pd.read_excel(dataFile, sheet_name=None)
+
+            # Append the new transaction to the 'Transactions' DataFrame
+            new_transaction = pd.DataFrame([[investor, id, transaction_date, ticker, type, shares, cost_per_share]], columns=['Investor', 'ID', 'Transaction Date', 'Ticker', 'Type', 'Shares', 'Cost Per Share'])
+            xlsx['Transactions'] = xlsx['Transactions']._append(new_transaction, ignore_index=True)
+
+            # Write all DataFrames back to the Excel file
+            with pd.ExcelWriter(dataFile, engine='openpyxl') as writer:
+                for sheet_name, df in xlsx.items():
+                    df.to_excel(writer, sheet_name=sheet_name, index=False)
+
+            # Re-run the calculations
+            backend.run_calc()
 
 with st.spinner('Report updated!'):
     time.sleep(1)     
