@@ -19,7 +19,7 @@ def run_calc():
 
     init_notebook_mode(connected=True)
 
-    filepath = "./New Sheet.xlsx"
+    filepath = "./data.xlsx"
 
     # Load the entire Excel file
     xls = pd.ExcelFile(filepath)
