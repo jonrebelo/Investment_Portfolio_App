@@ -51,11 +51,12 @@ Solution Design (high-level):
 
     -- Jonathan -- Investment_Portfolio_App
 
-    -Changed xlsx sheet to separate each transaction.
-    -Rewrote most of the originally forked app to properly utilize FIFO accounting.  
-    -Added code to pull current data from yfinance API.
-    -Added code to iterate on each transaction in the transactions tab, and copy each ticker only once to the summary page.
-    -Added calculations for profits, realized gains, and current value for each ticker.
+    - Changed xlsx sheet to separate each transaction.
+    - Rewrote most of the originally forked app to properly utilize FIFO accounting.  
+    - Added code to pull current data from yfinance API.
+    - Added code to iterate on each transaction in the transactions tab, and copy each ticker only once to the   
+      summary page.
+    - Added calculations for profits, realized gains, and current value for each ticker.
 
     -- Joe -- Invesment Portfolio (SWAST Handover Delays -- source/repo)
 
@@ -69,22 +70,22 @@ Solution Design (high-level):
 
     -- Jonathan --
 
-    -Added cost basis calculation to summary page.
-    -Added unrealized gains calculation to summary page. 
-    -Added rounding to 2 decimal places. 
+    - Added cost basis calculation to summary page.
+    - Added unrealized gains calculation to summary page. 
+    - Added rounding to 2 decimal places. 
 
 4/17/2024: 
     - Added a new column called "Investor" in the existing spreadsheet provided by Jonathan.
     - modify the code in streamlit repo to include the new column "Investor"  provided by Joe.   
-    - create branch off master -> https://github.com/jonrebelo/Investment_Portfolio_App/tree/JoeLi_branch    
+    - Create branch off master -> https://github.com/jonrebelo/Investment_Portfolio_App/tree/JoeLi_branch    
 
 Ongoing issues: 
 
      -- Jonathan --
 
-    -Adding new ticker in transaction sheet results in key error. 
-    -Handle all the null values being displayed on streamlit app. 
-    -Double check consistency of outputs to ensure cells don't change unexpectedly. 
+    - Adding new ticker in transaction sheet results in key error. 
+    - Handle all the null values being displayed on streamlit app. 
+    - Double check consistency of outputs to ensure cells don't change unexpectedly. 
      
        -- ** completed 4/18/2024 **
      
@@ -99,35 +100,84 @@ Ongoing issues:
         -- ** completed 4/18/2024 **
      
 4/17/2024: 
-    - confirm if adding any new columns in excel spreadsheet for 2nd repo will affect
+    - Confirm if adding any new columns in excel spreadsheet for 2nd repo will affect
       the existing code in the 1st repo (Investment_Portfolio_App).
-    - add flowchart for 2nd repo to show how the code works.
-    - update yml file with the latest changes.
+    - Add flowchart for 2nd repo to show how the code works.
+    - Update yml file with the latest changes.
        -- ** completed 4/18/2024 **
 
 4/18/2024 & 4/19/2024:
 -- Joe --
-   - Joined a team daily stand-up meeting with Jonathan and Michael at 1:00PM for 40 minutes to 80 minutes. Reported what I had done and any issues and next steps.
+   - Joined a team daily stand-up meeting with Jonathan and Michael at 1:00PM for 40 minutes to 80 minutes. 
+    Reported what I had done and any issues and next steps.
    - Developed investment_portfoli.py to implement the design.
-   - Modified my python code to accommodate the new requirements for personal trading data to be rendered with streamlit.
+   - Modified my python code to accommodate the new requirements for personal trading data to be rendered with 
+     streamlit.
    - Debugged and fixed the errors and bugs and created investment_portfolio_2.py
-   - Added package "import subprocess" for calling another .py file created by Jonathon (backend process/calculation).
+   - Added package "import subprocess" for calling another .py file created by Jonathon (backend process/
+     calculation).
    - Changed the file path from absolute to relative.
    - To call existing .py file (--Joe --).
-   - added package "import subprocess" for calling another .py file created by Jonathon (backend process/calculation).
+   - Added package "import subprocess" for calling another .py file created by Jonathon (backend process/
+     calculation).
    - Changed the file path from absolute to relative.
    - Add column for different investors (Joe / Jonathan) in the excel file.
 
 -- Jonathan --
-   - fixed the key error issue by changing the excel sheet name.
-   - fixed the null values being displayed on streamlit app.
-   - Our investors sheet had "All" listed as one of the investors but there was no "All" sheet name so it didn't know what to pull.
-   - I changed the excel sheet so that instead of "All" being tied to ID 99 it's "Summary" instead and everything works as expected.
+   - Fixed the key error issue by changing the excel sheet name.
+   - Fixed the null values being displayed on streamlit app.
+   - Our investors sheet had "All" listed as one of the investors but there was no "All" sheet name so it didn't 
+     know what to pull.
+   - Changed the excel sheet so that instead of "All" being tied to ID 99 it's "Summary" instead and everything 
+     works as expected.
    - Add column for different investors (Joe / Jonathan) in the excel file.
+
+4/20/2024 & 4/21/2024
+   - Email communications on next steps:
+   
+     - Make the backend an importable module
+     - Interactive tables (Aggrid, itables, Dtables)
+     - Plotly charts and graphs
+     - Analysis of data
+     - Transaction inputs. I'm wondering if we can use these and just do it through streamlit since they support interactive tables
+     - 
+    https://blog.streamlit.io/editable-dataframes-are-here/
+    https://discuss.streamlit.io/t/creating-interactive-table-with-input-elements/27962/2
+
+     - Our own goal of using a .db instead of xls.
+   
+4/22/2024
+
+-- Jonathan --
+
+   - Changed the name of the excel sheet to "data.xlsx" rather than the default New Sheet
+   - Changed the name of the Investment_Portfolio_App to backend.py
+   - Moved backend.py into a sub-directory called "Modules"
+   - Changed the name of the streamlit portion to frontend.py
+   - Revised both files so that backend.py is a module that gets imported by the frontend app.
+   - Implemented AG Grid into the code which includes sorting/filtering in streamlit (frontendv*.py) 
+     note: you must install streamlit-aggrid for it to work.   conda-install -c conda-forge streamlit-aggrid
+   - Added a pie chart to the streamlit and a percentage (%) change to the backend calculation.
+   
+
+-- Joe --
+
+   - Commented out one of two calls to the backend.py in frontendv3.py () on line 31 since backend code for submitting a trade is  	 
+     followed by calling backend.run_calc() on line 80. It will make the code more efficient and run faster.
+   - Added a bar chart with the Current Value as Current Value of Stocks in Summary.
+   - Changed the title for the pie chart as Current Percentage of Stocks in Summary
+
+4/23/2024
+
+   - Added back the run_calc() function in the with st.spinner code block. 
+     Note: This was why the <<Add Transactions>> button wasn't working properly.
+           When I uncommented this line I was able to add transactions no problem.
+   - formatted the dataframe (tables) so it only shows the columns we specify and it dynamically fills the web page so there's no 
+     white spaces.
 
 --All members--
    - Work with my teammates for the <<README.md>> and <<00-Investment_Portfolio_App-v2024.04.17.yml>> file.
-   - v1 of the project is complete end of day 4/19/2024.
+   - v2 of the project is complete end of day 4/24/2024.
 
 To do (Future work):
     
@@ -172,6 +222,9 @@ Application Instructions:
         plotly import __version__ plotly.offline plotly.graph_objs plotly.graph_objects plotly.express openpyxl openpyxl.utils.dataframe openpyxl.styles
         
         ## Run the code
-           - streamlit run investment_portfoli_v2.py (when running, it will call Investment_Portfolio_App.py).    
-           - Enter buy/sell transaction in the "Transactions" sheet ensuring the stock ticker symbol is correct.
+           - streamlit run frontendv4.py (when running, it will call backend.py).    
+           - Add a buy/sell transaction by selecting the "Add Transactions" button.
+             - Please ensure:
+                - the stock ticker symbol is correct.
+                - number of shares is a positive integer.
              note: Transaction total must be left blank (program will calculate this).
