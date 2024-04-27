@@ -34,7 +34,6 @@ column_defs = [
     {'headerName': 'Cost Basis', 'field': 'Cost Basis', 'filter': True},
     {'headerName': 'Realized Profit', 'field': 'Realized Profit', 'filter': True},
     {'headerName': 'Unrealized Profit', 'field': 'Unrealized Profit', 'filter': True},
-    {'headerName': '% Change', 'field': '% Change', 'filter': True}
 ]
 
 
