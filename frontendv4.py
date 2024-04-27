@@ -26,25 +26,26 @@ t2.markdown(" **tel:** 617-123-4567 **| website:** https://www.networktechnology
 dataFile = "data.xlsx"
 
 column_defs = [
-    {'headerName': 'Ticker', 'field': 'Ticker'},
-    {'headerName': 'Price Today', 'field': 'Price Today'},
-    {'headerName': 'Quantity', 'field': 'Quantity'},
-    {'headerName': 'Realized Sales', 'field': 'Realized Sales'},
-    {'headerName': 'Current Value', 'field': 'Current Value'},
-    {'headerName': 'Cost Basis', 'field': 'Cost Basis'},
-    {'headerName': 'Realized Profit', 'field': 'Realized Profit'},
-    {'headerName': 'Unrealized Profit', 'field': 'Unrealized Profit'},
-    {'headerName': '% Change', 'field': '% Change'}
+    {'headerName': 'Ticker', 'field': 'Ticker', 'filter': True},
+    {'headerName': 'Price Today', 'field': 'Price Today', 'filter': True},
+    {'headerName': 'Quantity', 'field': 'Quantity', 'filter': True},
+    {'headerName': 'Realized Sales', 'field': 'Realized Sales', 'filter': True},
+    {'headerName': 'Current Value', 'field': 'Current Value', 'filter': True},
+    {'headerName': 'Cost Basis', 'field': 'Cost Basis', 'filter': True},
+    {'headerName': 'Realized Profit', 'field': 'Realized Profit', 'filter': True},
+    {'headerName': 'Unrealized Profit', 'field': 'Unrealized Profit', 'filter': True},
+    {'headerName': '% Change', 'field': '% Change', 'filter': True}
 ]
 
+
 transaction_column_defs = [
-    {'headerName': 'Investor', 'field': 'Investor'},
-    {'headerName': 'ID', 'field': 'ID'},
-    {'headerName': 'Transaction Date', 'field': 'Transaction Date'},
-    {'headerName': 'Ticker', 'field': 'Ticker'},
-    {'headerName': 'Type', 'field': 'Type'},
-    {'headerName': 'Shares', 'field': 'Shares'},
-    {'headerName': 'Cost Per Share', 'field': 'Cost Per Share'}
+    {'headerName': 'Investor', 'field': 'Investor', 'filter': True},
+    {'headerName': 'ID', 'field': 'ID', 'filter': True},
+    {'headerName': 'Transaction Date', 'field': 'Transaction Date', 'filter': True},
+    {'headerName': 'Ticker', 'field': 'Ticker', 'filter': True},
+    {'headerName': 'Type', 'field': 'Type', 'filter': True},
+    {'headerName': 'Shares', 'field': 'Shares', 'filter': True},
+    {'headerName': 'Cost Per Share', 'field': 'Cost Per Share', 'filter': True}
 ]
 
 with st.spinner('Updating Report...'):    
