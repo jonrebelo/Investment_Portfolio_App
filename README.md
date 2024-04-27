@@ -198,7 +198,7 @@ Solution Code Description (low-level design):
     * Software packages (Python packages, etc.)
           yfinance, pandas, numpy, datetime, matplotlib.pyplot, plotly, plotly import __version__, plotly.offline, 
           plotly.graph_objs, plotly.graph_objects, plotly.express, streamlit, time, openpyxl, openpyxl.utils.dataframe,
-          openpyxl.styles, subprocess
+          openpyxl.styles, subprocess, aggrid
 	
 Actual Working Product Code: 
     Functions, modules, packages, documentation found in the 
@@ -219,7 +219,7 @@ Application Instructions:
             conda activate Investment_Portfolio_App
 
         ## Install additional packages in the environment for generating diagrams
-        plotly import __version__ plotly.offline plotly.graph_objs plotly.graph_objects plotly.express openpyxl openpyxl.utils.dataframe openpyxl.styles
+        plotly import __version__ plotly.offline plotly.graph_objs plotly.graph_objects plotly.express openpyxl openpyxl.utils.dataframe openpyxl.styles aggrid
         
         ## Run the code
            - streamlit run frontendv4.py (when running, it will call backend.py).    
