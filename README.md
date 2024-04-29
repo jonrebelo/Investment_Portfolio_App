@@ -5,6 +5,12 @@ Updated: 2024.04.19
 
 Project Name: Investment_Portfolio_App
 
+Future Enhancements:
+
+    - Database file support
+    - CSV import functionality
+    - REST API with to synchronize with brokerage apps (Vanguard, Fidelity, etc..)
+
 Project and Work Product Description: 
 
    Capturing and maintaining Buy/Sell Stock investments (your portfolio) for the beginner.
