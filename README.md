@@ -204,7 +204,7 @@ Solution Code Description (low-level design):
     * Software packages (Python packages, etc.)
           yfinance, pandas, numpy, datetime, matplotlib.pyplot, plotly, plotly import __version__, plotly.offline, 
           plotly.graph_objs, plotly.graph_objects, plotly.express, streamlit, time, openpyxl, openpyxl.utils.dataframe,
-          openpyxl.styles, subprocess, aggrid
+          openpyxl.styles, aggrid
 	
 Actual Working Product Code: 
     Functions, modules, packages, documentation found in the 
@@ -219,7 +219,7 @@ Application Instructions:
             download the code from the repo (master branch) @ https://github.com/jonrebelo/Investment_Portfolio_App  
           
          # create virtual envrionment 
-            conda create --name Investment_Portfolio_App -c conda-forge yfinance pandas numpy datetime matplotlib.pyplot plotly streamlit time openpyxl subprocess
+            conda create --name Investment_Portfolio_App -c conda-forge yfinance pandas numpy matplotlib plotly streamlit openpyxl streamlit-aggrid
           
         ## Activate the environment
             conda activate Investment_Portfolio_App
